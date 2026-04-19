@@ -10,6 +10,8 @@ import pandas as pd
 
 #konfiguracja api i klucza
 BASE_URL = "https://bdl.stat.gov.pl/api/v1"
+TIMEOUT = 15
+PAGE_SIZE = 100
 load_dotenv()
 KLUCZ_API = os.getenv("GUS_API_KEY", "")
 DOMYSLNE_PARAMETRY = {
@@ -20,6 +22,7 @@ DOMYSLNE_PARAMETRY = {
 
 #funkcja do łączenia się z api
 def _pobierz_dane(endpoint: str, parametry: dict = None) -> dict:
+    """Pobiera dane z endpointu API GUS i zwraca je jako słownik."""
 
     wszystkie_parametry = {**DOMYSLNE_PARAMETRY}
     if parametry:
@@ -32,7 +35,7 @@ def _pobierz_dane(endpoint: str, parametry: dict = None) -> dict:
             url,
             params=wszystkie_parametry,
             headers={"X-ClientId": KLUCZ_API} if KLUCZ_API else {},
-            timeout=15
+            timeout=TIMEOUT
         )
         odpowiedz.raise_for_status() #check czy serwer nie zwróci błędu
         return odpowiedz.json()
@@ -43,7 +46,7 @@ def _pobierz_dane(endpoint: str, parametry: dict = None) -> dict:
         raise TimeoutError("Serwer GUS nie odpowiada (timeout).")
     except requests.exceptions.HTTPError as e:
         raise ValueError(f"Błąd HTTP: {e}")
-    except requests.exceptions.JSONDecodeError:
+    except ValueError:
         raise ValueError(
             f"Serwer nie zwrócił JSON.\n"
             f"Status: {odpowiedz.status_code}\n"
@@ -55,6 +58,7 @@ def _pobierz_dane(endpoint: str, parametry: dict = None) -> dict:
 
 #funkcja do pobierania kategori e.g. rynek pracy
 def pobierz_tematy(id_nadrzedny: str = None) -> pd.DataFrame:
+    """Zwraca listę tematów (kategorii) jako DataFrame."""
 
     parametry = {"parentId": id_nadrzedny} if id_nadrzedny else None
     dane = _pobierz_dane("/subjects", parametry=parametry)
@@ -63,9 +67,10 @@ def pobierz_tematy(id_nadrzedny: str = None) -> pd.DataFrame:
 
 #funkcja do pobierania wskaźników z danej kategorii
 def pobierz_zmienne(id_tematu: str, strona: int = 0) -> pd.DataFrame:
+    """Zwraca wskaźniki dla podanego tematu."""
     dane = _pobierz_dane(
         "/variables",
-        parametry={"subject-id": id_tematu, "page": strona, "page-size": 100}
+        parametry={"subject-id": id_tematu, "page": strona, "page-size": PAGE_SIZE}
     )
     lista = dane.get("results", [])
     return pd.DataFrame(lista)
@@ -73,6 +78,9 @@ def pobierz_zmienne(id_tematu: str, strona: int = 0) -> pd.DataFrame:
 #dane dla poszczególnych wskaźników
 def pobierz_dane_wskaznika(id_zmiennej: str, rok_od: int, rok_do: int,
                            poziom_jednostki: int = 2) -> pd.DataFrame:
+    """Zwraca dane wskaźnika dla zakresu lat i poziomu jednostki."""
+    if rok_od > rok_do:
+        raise ValueError("Parametr 'rok_od' nie może być większy niż 'rok_do'.")
 
     lata = [str(r) for r in range(rok_od, rok_do + 1)]
 
@@ -81,7 +89,7 @@ def pobierz_dane_wskaznika(id_zmiennej: str, rok_od: int, rok_do: int,
         parametry={
             "unit-level": poziom_jednostki,
             "year": lata,
-            "page-size": 100,
+            "page-size": PAGE_SIZE,
         }
     )
 
@@ -104,8 +112,9 @@ def pobierz_dane_wskaznika(id_zmiennej: str, rok_od: int, rok_do: int,
 
 #funkcja pobierająca jednostki administracyjne (województwa)
 def pobierz_jednostki(poziom: int = 2) -> pd.DataFrame:
+    """Zwraca jednostki administracyjne dla podanego poziomu."""
 
-    dane = _pobierz_dane("/units", parametry={"level": poziom, "page-size": 100})
+    dane = _pobierz_dane("/units", parametry={"level": poziom, "page-size": PAGE_SIZE})
     lista = dane.get("results", [])
     return pd.DataFrame(lista)
 
@@ -124,6 +133,6 @@ if __name__ == "__main__":
     for id_p, opis in do_sprawdzenia.items():
         print(f"\n{'='*60}")
         print(f"{id_p} — {opis}")
-        dane = _pobierz_dane("/variables", parametry={"subject-id": id_p, "page-size": 100})
+        dane = _pobierz_dane("/variables", parametry={"subject-id": id_p, "page-size": PAGE_SIZE})
         for w in dane.get("results", []):
             print(f"  id={w['id']}  |  {w.get('n1','')} / {w.get('n2','')}  |  {w.get('measureUnitName','')}")

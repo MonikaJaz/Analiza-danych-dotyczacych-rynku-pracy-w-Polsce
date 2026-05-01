@@ -1,153 +1,110 @@
-"""Prosty interfejs tkinter do uruchamiania analiz rynku pracy."""
+"""Podstawowy interfejs tkinter do sprawdzania danych z API GUS BDL."""
 
 from __future__ import annotations
 
 import tkinter as tk
-from tkinter import ttk, messagebox
+from tkinter import messagebox, ttk
 
-from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+import pandas as pd
 
-from .analysis import AnalizatorRynkuPracy
-from .visualization import (
-    wykres_analiza_1,
-    wykres_analiza_2,
-    wykres_analiza_3,
-    wykres_analiza_4,
-    wykres_analiza_5,
-    wykres_analiza_6,
-    wykres_analiza_7,
-)
+from .api import GusApiError, pobierz_tematy, pobierz_zmienne
 
 
 class AplikacjaRynkuPracy(tk.Tk):
-    """Główne okno aplikacji."""
+    """Glowne okno aplikacji na aktualnym etapie projektu."""
 
     def __init__(self) -> None:
         super().__init__()
-        self.title("Analiza rynku pracy w Polsce")
-        self.geometry("1200x760")
+        self.title("Rynek pracy w Polsce - dane z API GUS BDL")
+        self.geometry("1000x650")
 
-        self.analizator = AnalizatorRynkuPracy()
-        self.canvas_plot: FigureCanvasTkAgg | None = None
+        self.status_var = tk.StringVar(value="Gotowe. Pobierz glowne kategorie albo podtematy.")
+        self.id_nadrzedne_var = tk.StringVar(value="")
+        self.id_tematu_var = tk.StringVar(value="P1364")
 
         self._zbuduj_interfejs()
 
     def _zbuduj_interfejs(self) -> None:
-        panel = ttk.Frame(self, padding=10)
-        panel.pack(side="top", fill="x")
+        pasek = ttk.Frame(self, padding=10)
+        pasek.pack(side="top", fill="x")
 
-        ttk.Label(panel, text="Rok:").pack(side="left")
-        self.rok_var = tk.IntVar(value=2023)
-        ttk.Entry(panel, width=8, textvariable=self.rok_var).pack(side="left", padx=5)
+        ttk.Button(pasek, text="Glowne kategorie", command=self.pokaz_glowne_kategorie).pack(
+            side="left", padx=(0, 8)
+        )
 
-        ttk.Label(panel, text="Rok od:").pack(side="left", padx=(20, 0))
-        self.rok_od_var = tk.IntVar(value=2010)
-        ttk.Entry(panel, width=8, textvariable=self.rok_od_var).pack(side="left", padx=5)
+        ttk.Label(pasek, text="ID kategorii/tematu nadrzednego:").pack(side="left")
+        ttk.Entry(pasek, width=12, textvariable=self.id_nadrzedne_var).pack(
+            side="left", padx=6
+        )
+        ttk.Button(pasek, text="Pobierz podtematy", command=self.pokaz_podtematy).pack(
+            side="left", padx=(0, 16)
+        )
 
-        ttk.Label(panel, text="Rok do:").pack(side="left")
-        self.rok_do_var = tk.IntVar(value=2023)
-        ttk.Entry(panel, width=8, textvariable=self.rok_do_var).pack(side="left", padx=5)
+        ttk.Label(pasek, text="ID tematu podrzędnego:").pack(side="left")
+        ttk.Entry(pasek, width=12, textvariable=self.id_tematu_var).pack(side="left", padx=6)
+        ttk.Button(pasek, text="Pobierz zmienne", command=self.pokaz_zmienne).pack(
+            side="left", padx=8
+        )
 
-        btn_frame = ttk.Frame(self, padding=10)
-        btn_frame.pack(side="top", fill="x")
+        ttk.Label(self, textvariable=self.status_var, padding=(10, 0)).pack(
+            side="top", anchor="w"
+        )
 
-        przyciski = [
-            ("Analiza 1", self.uruchom_analize_1),
-            ("Analiza 2", self.uruchom_analize_2),
-            ("Analiza 3", self.uruchom_analize_3),
-            ("Analiza 4", self.uruchom_analize_4),
-            ("Analiza 5", self.uruchom_analize_5),
-            ("Analiza 6", self.uruchom_analize_6),
-            ("Analiza 7", self.uruchom_analize_7),
-        ]
-        for tekst, cmd in przyciski:
-            ttk.Button(btn_frame, text=tekst, command=cmd).pack(side="left", padx=4, pady=4)
+        tabela_frame = ttk.Frame(self, padding=10)
+        tabela_frame.pack(side="top", fill="both", expand=True)
 
-        self.status_var = tk.StringVar(value="Gotowe. Wybierz analizę.")
-        ttk.Label(self, textvariable=self.status_var, padding=(10, 0)).pack(side="top", anchor="w")
+        self.tabela = ttk.Treeview(tabela_frame, show="headings")
+        self.tabela.pack(side="left", fill="both", expand=True)
 
-        self.wykres_frame = ttk.Frame(self, padding=10)
-        self.wykres_frame.pack(side="top", fill="both", expand=True)
+        pasek_y = ttk.Scrollbar(tabela_frame, orient="vertical", command=self.tabela.yview)
+        pasek_y.pack(side="right", fill="y")
+        self.tabela.configure(yscrollcommand=pasek_y.set)
 
-    def _pokaz_figure(self, fig) -> None:
-        if self.canvas_plot is not None:
-            self.canvas_plot.get_tk_widget().destroy()
-        self.canvas_plot = FigureCanvasTkAgg(fig, master=self.wykres_frame)
-        self.canvas_plot.draw()
-        self.canvas_plot.get_tk_widget().pack(fill="both", expand=True)
-
-    def _bezpiecznie(self, nazwa: str, funkcja):
+    def _bezpiecznie(self, opis: str, funkcja) -> None:
         try:
-            self.status_var.set(f"Uruchamiam: {nazwa}...")
+            self.status_var.set(f"Pobieram: {opis}...")
             self.update_idletasks()
-            funkcja()
-            self.status_var.set(f"Zakończono: {nazwa}")
-        except Exception as exc:
-            self.status_var.set("Błąd podczas analizy")
-            messagebox.showerror("Błąd", str(exc))
+            df = funkcja()
+            self._pokaz_dataframe(df)
+            self.status_var.set(f"Pobrano {len(df)} rekordow: {opis}.")
+        except (GusApiError, ValueError) as exc:
+            self.status_var.set("Blad pobierania danych.")
+            messagebox.showerror("Blad", str(exc))
 
-    def uruchom_analize_1(self) -> None:
-        def _run():
-            rok = self.rok_var.get()
-            df = self.analizator.analiza_1_bezrobocie_w_wojewodztwach(rok=rok)
-            fig = wykres_analiza_1(df, rok=rok)
-            self._pokaz_figure(fig)
+    def _pokaz_dataframe(self, df: pd.DataFrame) -> None:
+        self.tabela.delete(*self.tabela.get_children())
 
-        self._bezpiecznie("Analiza 1", _run)
+        kolumny = list(df.columns[:8])
+        self.tabela["columns"] = kolumny
 
-    def uruchom_analize_2(self) -> None:
-        def _run():
-            rok_od = self.rok_od_var.get()
-            rok_do = self.rok_do_var.get()
-            df = self.analizator.analiza_2_trend_bezrobocia(rok_od=rok_od, rok_do=rok_do)
-            fig = wykres_analiza_2(df)
-            self._pokaz_figure(fig)
+        for kolumna in kolumny:
+            self.tabela.heading(kolumna, text=kolumna)
+            self.tabela.column(kolumna, width=140, anchor="w")
 
-        self._bezpiecznie("Analiza 2", _run)
+        for _, rekord in df.head(200).iterrows():
+            wartosci = [rekord.get(kolumna, "") for kolumna in kolumny]
+            self.tabela.insert("", "end", values=wartosci)
 
-    def uruchom_analize_3(self) -> None:
-        def _run():
-            rok = self.rok_var.get()
-            df = self.analizator.analiza_3_bezrobotni_wg_wyksztalcenia(rok=rok)
-            fig = wykres_analiza_3(df, rok=rok)
-            self._pokaz_figure(fig)
+    def pokaz_glowne_kategorie(self) -> None:
+        self.id_nadrzedne_var.set("")
+        self._bezpiecznie("glowne kategorie BDL", pobierz_tematy)
 
-        self._bezpiecznie("Analiza 3", _run)
+    def pokaz_podtematy(self) -> None:
+        id_nadrzedne = self.id_nadrzedne_var.get().strip()
+        if not id_nadrzedne:
+            messagebox.showwarning("Brak ID", "Podaj ID z tabeli, np. K1 albo P1364.")
+            return
+        self._bezpiecznie(
+            f"podtematy dla {id_nadrzedne}",
+            lambda: pobierz_tematy(id_nadrzedne),
+        )
 
-    def uruchom_analize_4(self) -> None:
-        def _run():
-            rok = self.rok_var.get()
-            df = self.analizator.analiza_4_bezrobotni_wg_plci(rok=rok)
-            fig = wykres_analiza_4(df, rok=rok)
-            self._pokaz_figure(fig)
-
-        self._bezpiecznie("Analiza 4", _run)
-
-    def uruchom_analize_5(self) -> None:
-        def _run():
-            df = self.analizator.analiza_5_wplyw_covid()
-            fig = wykres_analiza_5(df)
-            self._pokaz_figure(fig)
-
-        self._bezpiecznie("Analiza 5", _run)
-
-    def uruchom_analize_6(self) -> None:
-        def _run():
-            rok = self.rok_var.get()
-            df = self.analizator.analiza_6_mlodzi_vs_dlugo(rok=rok)
-            fig = wykres_analiza_6(df, rok=rok)
-            self._pokaz_figure(fig)
-
-        self._bezpiecznie("Analiza 6", _run)
-
-    def uruchom_analize_7(self) -> None:
-        def _run():
-            rok = self.rok_var.get()
-            df = self.analizator.analiza_7_napiecie_rynku(rok=rok)
-            fig = wykres_analiza_7(df, rok=rok)
-            self._pokaz_figure(fig)
-
-        self._bezpiecznie("Analiza 7", _run)
+    def pokaz_zmienne(self) -> None:
+        id_tematu = self.id_tematu_var.get().strip()
+        if not id_tematu:
+            messagebox.showwarning("Brak ID", "Podaj ID tematu, np. P1364.")
+            return
+        self._bezpiecznie(f"zmienne dla tematu {id_tematu}", lambda: pobierz_zmienne(id_tematu))
 
 
 def uruchom_gui() -> None:

@@ -1,56 +1,51 @@
-# Analiza danych dotyczących rynku pracy w Polsce
+# Analiza danych dotyczacych rynku pracy w Polsce
 
-Projekt studencki w Pythonie: dynamiczne pobieranie danych z API GUS BDL, analiza w `pandas`, wizualizacje w `matplotlib` oraz interfejs graficzny w `tkinter`.
+Projekt studencki w Pythonie. Aktualny etap projektu zawiera czysta strukture aplikacji, warstwe API do dynamicznego pobierania danych z Banku Danych Lokalnych GUS oraz prosty interfejs `tkinter` do sprawdzenia danych.
+
+Analizy i wizualizacje zostana dodane dopiero po wyborze konkretnych pytan badawczych.
 
 ## Wymagane biblioteki
 
 - `pandas`
 - `requests`
 - `python-dotenv`
-- `matplotlib`
 - `tkinter` (zwykle wbudowany w Pythona)
 
 ## Konfiguracja klucza API
 
-1. Utwórz plik `.env` w katalogu głównym.
+1. Utworz plik `.env` w katalogu glownym.
 2. Dodaj:
 
 ```env
 GUS_API_KEY=twoj_klucz_api
 ```
 
-Klucz nie jest wymagany dla wszystkich endpointów, ale jest zalecany.
+Klucz nie jest wymagany dla wszystkich endpointow, ale jest zalecany.
 
 ## Uruchomienie aplikacji
 
-```bash
+```powershell
 python main.py
 ```
 
 ## Struktura projektu
 
-- `src/api.py` - komunikacja z API GUS
-- `src/analysis.py` - logika 7 analiz danych
-- `src/visualization.py` - wykresy `matplotlib`
-- `src/gui.py` - interfejs `tkinter`
+- `src/api.py` - komunikacja z API GUS BDL i zamiana odpowiedzi na `DataFrame`
+- `src/gui.py` - podstawowy interfejs `tkinter` do pobierania tematow i zmiennych
+- `scripts/debug_api.py` - skrypt pomocniczy do szybkiego sprawdzenia API
 - `main.py` - punkt startowy aplikacji
 
-## Zakres analiz
+## Warstwa API
 
-### 4 podstawowe
+Modul `src/api.py` udostepnia funkcje:
 
-1. Bezrobocie w województwach (wykres słupkowy)
-2. Trend bezrobocia w czasie 2010-2023 (wykres liniowy)
-3. Bezrobotni według wykształcenia
-4. Bezrobotni według płci w województwach
-
-### 3 nieoczywiste
-
-5. Wpływ COVID-19 na rynek pracy (porównanie 2019/2020/2021)
-6. Młodzi/krótkotrwale bezrobotni vs długotrwale bezrobotni
-7. Oferty pracy vs liczba bezrobotnych (bezrobotni na 1 ofertę pracy)
+- `pobierz_tematy()` - pobiera tematy/kategorie danych BDL
+- `pobierz_zmienne(id_tematu)` - pobiera wskazniki dla wybranego tematu
+- `pobierz_dane_wskaznika(id_zmiennej, rok_od, rok_do, poziom_jednostki)` - pobiera wartosci wskaznika
+- `pobierz_jednostki(poziom)` - pobiera jednostki terytorialne
 
 ## Uwagi
 
 - Aplikacja pobiera dane dynamicznie z internetu.
-- Część wskaźników jest dobierana automatycznie po słowach kluczowych z metadanych API, aby utrzymać prostą i czytelną implementację.
+- Na tym etapie nie ma jeszcze docelowych analiz ani wykresow.
+- Kolejny krok to wybor 2-4 konkretnych pytan analitycznych i dopiero potem dodanie modulow `analysis.py` oraz `visualization.py`.

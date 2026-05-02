@@ -11,11 +11,13 @@ from src.api import pobierz_tematy, pobierz_zmienne
 
 
 def main() -> None:
-    print("Pierwsze tematy z API:")
-    tematy = pobierz_tematy()
-    print(tematy.head(10).to_string(index=False))
+    id_tematu1 = "G623"
+    print(f"\nPierwsze zmienne dla tematu {id_tematu1}:")
+    zmienne = pobierz_tematy(id_tematu1)
+    print(zmienne.to_string(index=False))
 
-    id_tematu = "P1364"
+
+    id_tematu = "P3970"
     print(f"\nPierwsze zmienne dla tematu {id_tematu}:")
     zmienne = pobierz_zmienne(id_tematu)
     print(zmienne.head(10).to_string(index=False))

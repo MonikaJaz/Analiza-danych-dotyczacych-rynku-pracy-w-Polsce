@@ -3,7 +3,7 @@
 Dokumentacja API:
 https://bdl.stat.gov.pl/api/v1/swagger/index.html
 """
-
+# to jest test api
 from __future__ import annotations
 
 import os

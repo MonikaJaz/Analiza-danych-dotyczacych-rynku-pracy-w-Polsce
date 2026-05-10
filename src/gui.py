@@ -44,8 +44,8 @@ class AplikacjaRynkuPracy(tk.Tk):
     def __init__(self) -> None:
         super().__init__()
         self.title("Analiza rynku pracy w Polsce")
-        self.geometry("1120x720")
-        self.minsize(980, 620)
+        self.geometry("1400x820")
+        self.minsize(1100, 700)
         self.configure(bg=self.KOLORY["tlo"])
 
         self.status_var = tk.StringVar(value="Gotowe do uruchomienia analizy.")

@@ -6,6 +6,12 @@ import tkinter as tk
 from tkinter import messagebox, ttk
 from typing import Callable
 
+import threading
+import matplotlib
+matplotlib.use("TkAgg")
+import matplotlib.pyplot as plt
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+import numpy as np
 import pandas as pd
 
 from .api import GusApiError, pobierz_tematy, pobierz_zmienne

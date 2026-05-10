@@ -1,3 +1,5 @@
 pandas
 requests
 python-dotenv
+matplotlib
+python-dotenv

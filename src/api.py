@@ -68,20 +68,11 @@ staz_10do20     = "47190"
 staz_20do30     = "47176"
 staz_powyzej30  = "47171"
 
-WIEK_18_24  = "60530"
-WIEK_25_34  = "60531"
-WIEK_35_44  = "60532"
-WIEK_45_54  = "60533"
-WIEK_55_PLUS = "60534"
-
-STAZ_BEZ       = "60556"
-STAZ_DO1       = "60557"
-STAZ_1_5       = "60558"
-STAZ_10_20     = "60560"
-STAZ_20_30     = "60561"
-STAZ_POWYZEJ30 = "60562"
-
-NAPIECIE_RYNKU = "64760"   # P4334 – bezrobotni na 1 ofertę
+# P4334 – Napięcie rynku pracy
+napiecie_rynku       = "1702029"   # bezrobotni na 1 ofertę pracy [osoba]
+oferty_pracy         = "1702031"   # P1365
+stopa_bezrobocia     = "60270"   # P2392
+wynagrodzenie        = "64428"   # przeciętne miesięczne wynagrodzenie brutto [PLN]
 
 # Słownik województw
 WOJEWODZTWA = {

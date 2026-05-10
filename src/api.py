@@ -204,8 +204,11 @@ def pobierz_dane_wskaznika(
                 }
             )
 
-    return pd.DataFrame(wiersze)
-
+    df = pd.DataFrame(wiersze)
+    if not df.empty:
+        df["wartosc"] = pd.to_numeric(df["wartosc"], errors="coerce")
+        df["rok"] = pd.to_numeric(df["rok"], errors="coerce").astype("Int64")
+    return df
 
 def pobierz_jednostki(poziom: int = 2) -> pd.DataFrame:
     """Zwraca jednostki terytorialne dla wskazanego poziomu BDL."""

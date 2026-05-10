@@ -10,6 +10,14 @@ import pandas as pd
 
 from .api import GusApiError, pobierz_tematy, pobierz_zmienne
 
+from .api import (
+    GusApiError, WOJEWODZTWA,
+    pobierz_kpi, pobierz_mape_stopy_bezrobocia, pobierz_mape_wynagrodzen,
+    pobierz_napiecie_rynku, pobierz_strukture_plci, pobierz_strukture_stazu,
+    pobierz_strukture_wieku, pobierz_strukture_wyksztalcenia,
+    pobierz_trend_bezrobocia_plec, pobierz_trend_ofert_pracy,
+    pobierz_trend_stopy_bezrobocia, pobierz_trend_wynagrodzen, GusApiError, pobierz_tematy, pobierz_zmienne
+)
 
 class AplikacjaRynkuPracy(tk.Tk):
     """Glowne okno aplikacji dashboardowej."""

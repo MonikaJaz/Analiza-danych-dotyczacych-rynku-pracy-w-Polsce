@@ -26,6 +26,56 @@ load_dotenv()
 KLUCZ_API = os.getenv("GUS_API_KEY", "")
 
 
+# ID zmiennych BDL
+bezrobotni_kobiety   = "60270"   # kobiety
+bezrobotni_mezczyzni = "60271"   # mężczyźni
+bezrobotni_ogolem    = "60269"   # ogółem
+
+OFERTY_PRACY         = "60559"   # P1365
+STOPA_BEZROBOCIA     = "63428"   # P2392
+WYNAGRODZENIE        = "64428"   # K40 > P2497
+
+WYKSZTALCENIE_WYZSZE      = "60543"
+WYKSZTALCENIE_POLICEALNE  = "60544"
+WYKSZTALCENIE_SREDNIE_OG  = "60545"
+WYKSZTALCENIE_ZASADNICZE  = "60546"
+WYKSZTALCENIE_PODSTAWOWE  = "60547"
+
+WIEK_18_24  = "60530"
+WIEK_25_34  = "60531"
+WIEK_35_44  = "60532"
+WIEK_45_54  = "60533"
+WIEK_55_PLUS = "60534"
+
+STAZ_BEZ       = "60556"
+STAZ_DO1       = "60557"
+STAZ_1_5       = "60558"
+STAZ_10_20     = "60560"
+STAZ_20_30     = "60561"
+STAZ_POWYZEJ30 = "60562"
+
+NAPIECIE_RYNKU = "64760"   # P4334 – bezrobotni na 1 ofertę
+
+# Słownik województw
+WOJEWODZTWA = {
+    "020000000000": "Dolnośląskie",
+    "040000000000": "Kujawsko-Pomorskie",
+    "060000000000": "Lubelskie",
+    "080000000000": "Lubuskie",
+    "100000000000": "Łódzkie",
+    "120000000000": "Małopolskie",
+    "140000000000": "Mazowieckie",
+    "160000000000": "Opolskie",
+    "180000000000": "Podkarpackie",
+    "200000000000": "Podlaskie",
+    "220000000000": "Pomorskie",
+    "240000000000": "Śląskie",
+    "260000000000": "Świętokrzyskie",
+    "280000000000": "Warmińsko-Mazurskie",
+    "300000000000": "Wielkopolskie",
+    "320000000000": "Zachodniopomorskie",
+}
+
 class GusApiError(RuntimeError):
     """Blad komunikacji z API BDL GUS."""
 

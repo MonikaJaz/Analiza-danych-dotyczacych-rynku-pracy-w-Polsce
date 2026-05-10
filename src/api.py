@@ -333,3 +333,37 @@ def pobierz_strukturę_stazu(rok: int, wojew: str | None = None) -> pd.DataFrame
         wartosc = df["wartosc"].sum()
         wiersze.append({"staz": nazwa, "liczba": wartosc})
     return pd.DataFrame(wiersze)
+
+def pobierz_kpi(rok: int) -> dict[str, float | str]:
+    """Pobiera kluczowe wskaźniki dla wybranego roku – Polska."""
+    wynik: dict[str, float | str] = {}
+
+    try:
+        df = pobierz_dane_wskaznika(VAR_STOPA_BEZROBOCIA, rok, rok, poziom_jednostki=0)
+        df = df[df["jednostka"].str.upper() == "POLSKA"]
+        wynik["stopa_bezrobocia"] = round(float(df["wartosc"].iloc[0]), 1) if not df.empty else "brak"
+    except Exception:
+        wynik["stopa_bezrobocia"] = "brak"
+
+    try:
+        df = pobierz_dane_wskaznika(VAR_WYNAGRODZENIE, rok, rok, poziom_jednostki=0)
+        df = df[df["jednostka"].str.upper() == "POLSKA"]
+        wynik["wynagrodzenie"] = round(float(df["wartosc"].iloc[0]), 0) if not df.empty else "brak"
+    except Exception:
+        wynik["wynagrodzenie"] = "brak"
+
+    try:
+        df = pobierz_dane_wskaznika(VAR_BEZROBOTNI_OGOLEM, rok, rok, poziom_jednostki=0)
+        df = df[df["jednostka"].str.upper() == "POLSKA"]
+        wynik["bezrobotni"] = int(df["wartosc"].iloc[0]) if not df.empty else "brak"
+    except Exception:
+        wynik["bezrobotni"] = "brak"
+
+    try:
+        df = pobierz_dane_wskaznika(VAR_OFERTY_PRACY, rok, rok, poziom_jednostki=0)
+        df = df[df["jednostka"].str.upper() == "POLSKA"]
+        wynik["oferty"] = int(df["wartosc"].iloc[0]) if not df.empty else "brak"
+    except Exception:
+        wynik["oferty"] = "brak"
+
+    return wynik

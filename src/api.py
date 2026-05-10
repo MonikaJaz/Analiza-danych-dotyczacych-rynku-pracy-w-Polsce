@@ -35,11 +35,38 @@ OFERTY_PRACY         = "60559"   # P1365
 STOPA_BEZROBOCIA     = "63428"   # P2392
 WYNAGRODZENIE        = "64428"   # K40 > P2497
 
-WYKSZTALCENIE_WYZSZE      = "60543"
-WYKSZTALCENIE_POLICEALNE  = "60544"
-WYKSZTALCENIE_SREDNIE_OG  = "60545"
-WYKSZTALCENIE_ZASADNICZE  = "60546"
-WYKSZTALCENIE_PODSTAWOWE  = "60547"
+# P1364 – Bezrobotni zarejestrowani ogółem
+bezrobotni_kobiety   = "33521"   # kobiety
+bezrobotni_mezczyzni = "33519"   # mężczyźni
+bezrobotni_ogolem    = "33507"   # ogółem
+#
+# P1365 – Oferty pracy
+oferty_koniec_roku = "3285"      # ogółem, w końcu roku
+oferty_wciagu_roku  = "1610567"   # ogółem, w ciągu roku
+#
+# P1947 – Bezrobotni wg wykształcenia (ogółem, bez podziału na płeć)
+wyksztalcenie_ogolem      = "47058"
+wyksztalcenie_wyzsze      = "47053"
+wyksztalcenie_policealne  = "60544"
+wyksztalcenie_srednie     = "60545"
+wyksztalcenie_zasadnicze  = "60546"
+wyksztalcenie_podstawowe  = "60547"
+#
+# P1946 – Bezrobotni wg wieku (ogółem, bez podziału na płeć)
+wiek_18_24  = "8813"
+wiek_25_34  = "8815"
+wiek_35_44  = "8817"
+wiek_45_54  = "8819"
+wiek_55plus = "8821"
+#
+# P1949 – Bezrobotni wg stażu pracy (ogółem, bez podziału na płeć)
+staz_bez        = "60556"
+staz_do1        = "47167"
+staz_1do5       = "47182"
+staz_1do10      = "47188"
+staz_10do20     = "47190"
+staz_20do30     = "47176"
+staz_powyzej30  = "47171"
 
 WIEK_18_24  = "60530"
 WIEK_25_34  = "60531"

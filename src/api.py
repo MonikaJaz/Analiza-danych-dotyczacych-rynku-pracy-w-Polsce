@@ -214,3 +214,122 @@ def pobierz_jednostki(poziom: int = 2) -> pd.DataFrame:
     """Zwraca jednostki terytorialne dla wskazanego poziomu BDL."""
     rekordy = _pobierz_wszystkie_strony("/units", parametry={"level": poziom})
     return _dataframe_z_wynikow(rekordy)
+
+def pobierz_trend_bezrobocia_plec(rok_od: int, rok_do: int) -> pd.DataFrame:
+    """Trend liczby bezrobotnych wg płci (ogółem, kobiety, mężczyźni)."""
+    dfs = {}
+    for etykieta, id_var in [
+        ("Ogółem", bezrobotni_ogolem),
+        ("Kobiety", bezrobotni_kobiety),
+        ("Mężczyźni", bezrobotni_mezczyzni),
+    ]:
+        df = pobierz_dane_wskaznika(id_var, rok_od, rok_do, poziom_jednostki=0)
+        df = df[df["jednostka"].str.upper() == "POLSKA"].copy()
+        df = df.groupby("rok")["wartosc"].sum().reset_index()
+        df.columns = ["rok", etykieta]
+        dfs[etykieta] = df
+
+    wynik = dfs["Ogółem"]
+    for klucz in ["Kobiety", "Mężczyźni"]:
+        wynik = wynik.merge(dfs[klucz], on="rok", how="outer")
+
+    wynik = wynik.sort_values("rok").reset_index(drop=True)
+    if "Kobiety" in wynik.columns and "Mężczyźni" in wynik.columns:
+        wynik["Różnica (K–M)"] = wynik["Kobiety"] - wynik["Mężczyźni"]
+    return wynik
+
+def pobierz_trend_stopy_bezrobocia(rok_od: int, rok_do: int) -> pd.DataFrame:
+    df = pobierz_dane_wskaznika(stopa_bezrobocia, rok_od, rok_do, poziom_jednostki=0)
+    df = df[df["jednostka"].str.upper() == "POLSKA"].copy()
+    return df.sort_values("rok").reset_index(drop=True)
+
+def pobierz_trend_wynagrodzen(rok_od: int, rok_do: int) -> pd.DataFrame:
+    df = pobierz_dane_wskaznika(wynagrodzenie, rok_od, rok_do, poziom_jednostki=0)
+    df = df[df["jednostka"].str.upper() == "POLSKA"].copy()
+    return df.sort_values("rok").reset_index(drop=True)
+
+def pobierz_trend_ofert_pracy(rok_od: int, rok_do: int) -> pd.DataFrame:
+    df = pobierz_dane_wskaznika(oferty_pracy, rok_od, rok_do, poziom_jednostki=0)
+    df = df[df["jednostka"].str.upper() == "POLSKA"].copy()
+    return df.sort_values("rok").reset_index(drop=True)
+
+def pobierz_mape_stopy_bezrobocia(rok: int) -> pd.DataFrame:
+    df = pobierz_dane_wskaznika(stopa_bezrobocia, rok, rok, poziom_jednostki=2)
+    df = df[df["rok"] == rok].copy()
+    return df.sort_values("wartosc", ascending=False).reset_index(drop=True)
+
+def pobierz_mape_wynagrodzen(rok: int) -> pd.DataFrame:
+    df = pobierz_dane_wskaznika(wynagrodzenie, rok, rok, poziom_jednostki=2)
+    df = df[df["rok"] == rok].copy()
+    return df.sort_values("wartosc", ascending=False).reset_index(drop=True)
+
+def pobierz_napiecie_rynku(rok: int) -> pd.DataFrame:
+    df = pobierz_dane_wskaznika(napiecie_rynku, rok, rok, poziom_jednostki=2)
+    df = df[df["rok"] == rok].copy()
+    return df.sort_values("wartosc", ascending=False).reset_index(drop=True)
+
+def pobierz_strukturę_wyksztalcenia(rok: int, wojew: str | None = None) -> pd.DataFrame:
+    grupy = {
+        "Wyższe": wyksztalcenie_wyzsze,
+        "Policealne i śr. zawodowe": wyksztalcenie_policealne,
+        "Średnie ogólnokształcące": wyksztalcenie_srednie,
+        "Zasadnicze zawodowe": wyksztalcenie_zasadnicze,
+        "Podstawowe i niższe": wyksztalcenie_podstawowe,
+    }
+    wiersze = []
+    for nazwa, id_var in grupy.items():
+        df = pobierz_dane_wskaznika(id_var, rok, rok, poziom_jednostki=2 if wojew else 0)
+        df = df[df["rok"] == rok]
+        if wojew:
+            df = df[df["jednostka"] == wojew]
+        wartosc = df["wartosc"].sum()
+        wiersze.append({"wyksztalcenie": nazwa, "liczba": wartosc})
+    return pd.DataFrame(wiersze)
+
+def pobierz_strukturę_wieku(rok: int, wojew: str | None = None) -> pd.DataFrame:
+    grupy = {
+        "18–24 lata": wiek_18_24,
+        "25–34 lata": wiek_25_34,
+        "35–44 lata": wiek_35_44,
+        "45–54 lata": wiek_45_54,
+        "55 lat i więcej": wiek_55plus,
+    }
+    wiersze = []
+    for nazwa, id_var in grupy.items():
+        df = pobierz_dane_wskaznika(id_var, rok, rok, poziom_jednostki=2 if wojew else 0)
+        df = df[df["rok"] == rok]
+        if wojew:
+            df = df[df["jednostka"] == wojew]
+        wartosc = df["wartosc"].sum()
+        wiersze.append({"wiek": nazwa, "liczba": wartosc})
+    return pd.DataFrame(wiersze)
+
+def pobierz_strukturę_plci(rok: int, wojew: str | None = None) -> pd.DataFrame:
+    wyniki = []
+    for etykieta, id_var in [("Kobiety", bezrobotni_kobiety), ("Mężczyźni", bezrobotni_mezczyzni)]:
+        df = pobierz_dane_wskaznika(id_var, rok, rok, poziom_jednostki=2 if wojew else 0)
+        df = df[df["rok"] == rok]
+        if wojew:
+            df = df[df["jednostka"] == wojew]
+        wartosc = df["wartosc"].sum()
+        wyniki.append({"plec": etykieta, "liczba": wartosc})
+    return pd.DataFrame(wyniki)
+
+def pobierz_strukturę_stazu(rok: int, wojew: str | None = None) -> pd.DataFrame:
+    grupy = {
+        "Bez stażu": staz_bez,
+        "Do 1 roku": staz_do1,
+        "1–5 lat": staz_1do5,
+        "10–20 lat": staz_10do20,
+        "20–30 lat": staz_20do30,
+        "Powyżej 30 lat": staz_powyzej30,
+    }
+    wiersze = []
+    for nazwa, id_var in grupy.items():
+        df = pobierz_dane_wskaznika(id_var, rok, rok, poziom_jednostki=2 if wojew else 0)
+        df = df[df["rok"] == rok]
+        if wojew:
+            df = df[df["jednostka"] == wojew]
+        wartosc = df["wartosc"].sum()
+        wiersze.append({"staz": nazwa, "liczba": wartosc})
+    return pd.DataFrame(wiersze)

@@ -17,7 +17,7 @@ def main() -> None:
     print(zmienne.to_string(index=False))
 
 
-    id_tematu = "P3970"
+    id_tematu = "P1947"
     print(f"\nPierwsze zmienne dla tematu {id_tematu}:")
     zmienne = pobierz_zmienne(id_tematu)
     print(zmienne.head(10).to_string(index=False))

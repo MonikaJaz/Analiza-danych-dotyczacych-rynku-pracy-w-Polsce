@@ -37,13 +37,13 @@ bezrobotni_ogolem    = "33507"   # ogółem
 oferty_koniec_roku = "3285"      # ogółem, w końcu roku
 oferty_wciagu_roku  = "1610567"   # ogółem, w ciągu roku
 #
-# P1947 – Bezrobotni wg wykształcenia (ogółem, bez podziału na płeć)
+# P1947 – Bezrobotni wg wykształcenia (ogółem)
 wyksztalcenie_ogolem      = "47058"
 wyksztalcenie_wyzsze      = "47053"
-wyksztalcenie_policealne  = "60544"
-wyksztalcenie_srednie     = "60545"
-wyksztalcenie_zasadnicze  = "60546"
-wyksztalcenie_podstawowe  = "60547"
+wyksztalcenie_policealne  = "47062"
+wyksztalcenie_srednie     = "47060"
+wyksztalcenie_zasadnicze  = "47063"
+wyksztalcenie_podstawowe  = "47049"
 #
 # P1946 – Bezrobotni wg wieku (ogółem, bez podziału na płeć)
 wiek_18_24  = "8813"
@@ -52,8 +52,8 @@ wiek_35_44  = "8817"
 wiek_45_54  = "8819"
 wiek_55plus = "8821"
 #
-# P1949 – Bezrobotni wg stażu pracy (ogółem, bez podziału na płeć)
-staz_bez        = "60556"
+# P1949 – Bezrobotni wg stażu pracy (ogółem)
+staz_bez        = "47177"
 staz_do1        = "47167"
 staz_1do5       = "47182"
 staz_1do10      = "47188"

@@ -3,7 +3,6 @@
 Dokumentacja API:
 https://bdl.stat.gov.pl/api/v1/swagger/index.html
 """
-# to jest test api
 from __future__ import annotations
 
 import os
@@ -226,16 +225,17 @@ def pobierz_jednostki(poziom: int = 2) -> pd.DataFrame:
     rekordy = _pobierz_wszystkie_strony("/units", parametry={"level": poziom})
     return _dataframe_z_wynikow(rekordy)
 
-def pobierz_trend_bezrobocia_plec(rok_od: int, rok_do: int) -> pd.DataFrame:
-    """Trend liczby bezrobotnych wg płci (ogółem, kobiety, mężczyźni)."""
+def pobierz_trend_bezrobocia_plec(rok_od: int, rok_do: int, wojew: str | None = None) -> pd.DataFrame:
+    poziom = 2 if wojew else 0
+    filtr = wojew.upper() if wojew else "POLSKA"
     dfs = {}
     for etykieta, id_var in [
         ("Ogółem", bezrobotni_ogolem),
         ("Kobiety", bezrobotni_kobiety),
         ("Mężczyźni", bezrobotni_mezczyzni),
     ]:
-        df = pobierz_dane_wskaznika(id_var, rok_od, rok_do, poziom_jednostki=0)
-        df = df[df["jednostka"].str.upper() == "POLSKA"].copy()
+        df = pobierz_dane_wskaznika(id_var, rok_od, rok_do, poziom_jednostki=poziom)
+        df = df[df["jednostka"].str.upper() == filtr].copy()
         df = df.groupby("rok")["wartosc"].sum().reset_index()
         df.columns = ["rok", etykieta]
         dfs[etykieta] = df
@@ -249,19 +249,25 @@ def pobierz_trend_bezrobocia_plec(rok_od: int, rok_do: int) -> pd.DataFrame:
         wynik["Różnica (K–M)"] = wynik["Kobiety"] - wynik["Mężczyźni"]
     return wynik
 
-def pobierz_trend_stopy_bezrobocia(rok_od: int, rok_do: int) -> pd.DataFrame:
-    df = pobierz_dane_wskaznika(stopa_bezrobocia, rok_od, rok_do, poziom_jednostki=0)
-    df = df[df["jednostka"].str.upper() == "POLSKA"].copy()
+def pobierz_trend_stopy_bezrobocia(rok_od: int, rok_do: int, wojew: str | None = None) -> pd.DataFrame:
+    poziom = 2 if wojew else 0
+    filtr = wojew.upper() if wojew else "POLSKA"
+    df = pobierz_dane_wskaznika(stopa_bezrobocia, rok_od, rok_do, poziom_jednostki=poziom)
+    df = df[df["jednostka"].str.upper() == filtr].copy()
     return df.sort_values("rok").reset_index(drop=True)
 
-def pobierz_trend_wynagrodzen(rok_od: int, rok_do: int) -> pd.DataFrame:
-    df = pobierz_dane_wskaznika(wynagrodzenie, rok_od, rok_do, poziom_jednostki=0)
-    df = df[df["jednostka"].str.upper() == "POLSKA"].copy()
+def pobierz_trend_wynagrodzen(rok_od: int, rok_do: int, wojew: str | None = None) -> pd.DataFrame:
+    poziom = 2 if wojew else 0
+    filtr = wojew.upper() if wojew else "POLSKA"
+    df = pobierz_dane_wskaznika(wynagrodzenie, rok_od, rok_do, poziom_jednostki=poziom)
+    df = df[df["jednostka"].str.upper() == filtr].copy()
     return df.sort_values("rok").reset_index(drop=True)
 
-def pobierz_trend_ofert_pracy(rok_od: int, rok_do: int) -> pd.DataFrame:
-    df = pobierz_dane_wskaznika(oferty_pracy, rok_od, rok_do, poziom_jednostki=0)
-    df = df[df["jednostka"].str.upper() == "POLSKA"].copy()
+def pobierz_trend_ofert_pracy(rok_od: int, rok_do: int, wojew: str | None = None) -> pd.DataFrame:
+    poziom = 2 if wojew else 0
+    filtr = wojew.upper() if wojew else "POLSKA"
+    df = pobierz_dane_wskaznika(oferty_pracy, rok_od, rok_do, poziom_jednostki=poziom)
+    df = df[df["jednostka"].str.upper() == filtr].copy()
     return df.sort_values("rok").reset_index(drop=True)
 
 def pobierz_mape_stopy_bezrobocia(rok: int) -> pd.DataFrame:

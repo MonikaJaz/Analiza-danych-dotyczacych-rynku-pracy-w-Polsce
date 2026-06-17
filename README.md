@@ -1,51 +1,64 @@
-# Analiza danych dotyczacych rynku pracy w Polsce
+# Analiza rynku pracy w Polsce
 
-Projekt studencki w Pythonie. Aktualny etap projektu zawiera czysta strukture aplikacji, warstwe API do dynamicznego pobierania danych z Banku Danych Lokalnych GUS oraz prosty interfejs `tkinter` do sprawdzenia danych.
+Interaktywny dashboard do eksploracji danych o rynku pracy w Polsce. Dane pobierane są na bieżąco z API Banku Danych Lokalnych GUS.
 
-Analizy i wizualizacje zostana dodane dopiero po wyborze konkretnych pytan badawczych.
+## Wymagania
 
-## Wymagane biblioteki
+```
+pip install pandas requests python-dotenv matplotlib
+```
 
-- `pandas`
-- `requests`
-- `python-dotenv`
-- `tkinter` (zwykle wbudowany w Pythona)
+`tkinter` jest zazwyczaj wbudowany w Pythona – nie wymaga osobnej instalacji.
 
 ## Konfiguracja klucza API
 
-1. Utworz plik `.env` w katalogu glownym.
-2. Dodaj:
+Utwórz plik `.env` w katalogu głównym:
 
-```env
+```
 GUS_API_KEY=twoj_klucz_api
 ```
 
-Klucz nie jest wymagany dla wszystkich endpointow, ale jest zalecany.
+Klucz można wygenerować na stronie: https://bdl.stat.gov.pl/api/v1
 
-## Uruchomienie aplikacji
+## Uruchomienie
 
-```powershell
+```
 python main.py
 ```
 
+## Opis dashboardu
+
+Dashboard ma 6 zakładek:
+
+- **Trendy** – wykresy liniowe bezrobocia (ogółem i wg płci), stopy bezrobocia, wynagrodzeń i ofert pracy w wybranym zakresie lat
+- **Mapa** – kartogram województw: stopa bezrobocia, wynagrodzenia lub napięcie rynku pracy
+- **Struktura bezrobocia** – wykresy kołowe i słupkowe pokazujące podział wg płci, wykształcenia, wieku i stażu pracy
+- **Statystyki** – tabela statystyk opisowych (średnia, mediana, kwartyle itp.) z wykresami pudełkowymi; możliwość filtrowania po województwie
+- **Dane** – surowe dane w tabeli z możliwością wyboru źródła
+- **O programie** – krótki opis aplikacji
+
+Filtry po lewej stronie (zakres lat, województwo, rodzaj mapy) zmieniają się zależnie od aktywnej zakładki.
+
 ## Struktura projektu
 
-- `src/api.py` - komunikacja z API GUS BDL i zamiana odpowiedzi na `DataFrame`
-- `src/gui.py` - podstawowy interfejs `tkinter` do pobierania tematow i zmiennych
-- `scripts/debug_api.py` - skrypt pomocniczy do szybkiego sprawdzenia API
-- `main.py` - punkt startowy aplikacji
+```
+src/
+  api.py           – pobieranie danych z API GUS BDL
+  gui.py           – okno główne, nagłówek, pasek KPI, sidebar, notebook
+  config.py        – kolory i stałe
+  utils.py         – funkcje pomocnicze (wykresy, formatowanie)
+  tab_trendy.py    – logika zakładki Trendy
+  tab_mapa.py      – logika zakładki Mapa
+  tab_struktura.py – logika zakładki Struktura
+  tab_statystyki.py – logika zakładki Statystyki
+  tab_dane.py      – logika zakładki Dane
 
-## Warstwa API
+assets/
+  wojewodztwa.geojson – dane geograficzne do mapy
 
-Modul `src/api.py` udostepnia funkcje:
+main.py            – punkt startowy
+```
 
-- `pobierz_tematy()` - pobiera tematy/kategorie danych BDL
-- `pobierz_zmienne(id_tematu)` - pobiera wskazniki dla wybranego tematu
-- `pobierz_dane_wskaznika(id_zmiennej, rok_od, rok_do, poziom_jednostki)` - pobiera wartosci wskaznika
-- `pobierz_jednostki(poziom)` - pobiera jednostki terytorialne
+## Źródło danych
 
-## Uwagi
-
-- Aplikacja pobiera dane dynamicznie z internetu.
-- Na tym etapie nie ma jeszcze docelowych analiz ani wykresow.
-- Kolejny krok to wybor 2-4 konkretnych pytan analitycznych i dopiero potem dodanie modulow `analysis.py` oraz `visualization.py`.
+Bank Danych Lokalnych GUS – https://bdl.stat.gov.pl/api/v1

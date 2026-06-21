@@ -136,7 +136,7 @@ class AplikacjaRynkuPracy(tk.Tk):
                  font=("Segoe UI", 9)).grid(row=0, column=2, sticky="e", padx=24)
 
     def _zbuduj_kpi_bar(self) -> None:
-        self.kpi_frame = tk.Frame(self, bg=KOLORY["kpi_tlo"], height=72)
+        self.kpi_frame = tk.Frame(self, bg=KOLORY["kpi_tlo"], height=78)
         self.kpi_frame.grid(row=1, column=0, sticky="ew")
         self.kpi_frame.grid_propagate(False)
 
@@ -157,7 +157,7 @@ class AplikacjaRynkuPracy(tk.Tk):
             tk.Label(ramka, text=nazwa, bg=KOLORY["panel"], fg=KOLORY["tekst2"],
                      font=("Segoe UI", 8)).pack(anchor="w")
             lbl = tk.Label(ramka, text="—", bg=KOLORY["panel"], fg=akcenty[i],
-                           font=("Segoe UI Semibold", 18))
+                           font=("Segoe UI Semibold", 14))
             lbl.pack(anchor="w")
             self.kpi_labels[klucz] = lbl
             self.kpi_labels[klucz + "_jednostka"] = jednostka  # type: ignore[assignment]

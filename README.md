@@ -5,7 +5,7 @@ Interaktywny dashboard do eksploracji danych o rynku pracy w Polsce. Dane pobier
 ## Wymagania
 
 ```
-pip install pandas requests python-dotenv matplotlib
+pip install -r requirements.txt
 ```
 
 `tkinter` jest zazwyczaj wbudowany w Pythona – nie wymaga osobnej instalacji.
@@ -28,16 +28,15 @@ python main.py
 
 ## Opis dashboardu
 
-Dashboard ma 6 zakładek:
+Dashboard ma 5 zakładek:
 
-- **Trendy** – wykresy liniowe bezrobocia (ogółem i wg płci), stopy bezrobocia, wynagrodzeń i ofert pracy w wybranym zakresie lat
+- **Trendy** – wykresy liniowe bezrobocia (ogółem i wg płci), stopy bezrobocia i wynagrodzeń (z linią trendu) oraz ofert pracy w wybranym zakresie lat
 - **Mapa** – kartogram województw: stopa bezrobocia, wynagrodzenia lub napięcie rynku pracy
 - **Struktura bezrobocia** – wykresy kołowe i słupkowe pokazujące podział wg płci, wykształcenia, wieku i stażu pracy
-- **Statystyki** – tabela statystyk opisowych (średnia, mediana, kwartyle itp.) z wykresami pudełkowymi; możliwość filtrowania po województwie
+- **Statystyki** – tabela statystyk opisowych (średnia, mediana, kwartyle, odchylenie std. itp.) dla wybranych wskaźników
 - **Dane** – surowe dane w tabeli z możliwością wyboru źródła
-- **O programie** – krótki opis aplikacji
 
-Filtry po lewej stronie (zakres lat, województwo, rodzaj mapy) zmieniają się zależnie od aktywnej zakładki.
+Wszystkie filtry (zakres lat, województwo, rodzaj mapy, wybór wskaźników/źródeł) znajdują się w panelu bocznym po lewej stronie. Panel pokazuje tylko filtry odpowiadające aktualnie wybranej zakładce. Po ustawieniu filtrów dane wczytuje się przyciskiem „Pobierz dane”.
 
 ## Struktura projektu
 

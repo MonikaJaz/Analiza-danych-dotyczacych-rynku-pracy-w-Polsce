@@ -1,3 +1,5 @@
+"""Funkcje pomocnicze: rysowanie wykresów, GeoJSON, formatowanie liczb i nazw."""
+
 import json
 import unicodedata
 

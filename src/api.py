@@ -1,5 +1,4 @@
-"""Warstwa komunikacji z API Banku Danych Lokalnych GUS.
-
+"""
 Dokumentacja API:
 https://bdl.stat.gov.pl/api/v1/swagger/index.html
 """

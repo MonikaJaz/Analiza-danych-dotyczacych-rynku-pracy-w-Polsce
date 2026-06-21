@@ -1,3 +1,5 @@
+"""Zakładka Struktura bezrobocia – podział bezrobotnych wg płci, wykształcenia, wieku i stażu pracy."""
+
 import threading
 from tkinter import messagebox
 

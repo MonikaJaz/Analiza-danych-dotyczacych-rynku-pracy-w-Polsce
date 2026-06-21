@@ -1,3 +1,5 @@
+"""Zakładka Mapa – kartogram województw (stopa bezrobocia / wynagrodzenia / napięcie rynku pracy)."""
+
 import threading
 import tkinter as tk
 from tkinter import messagebox

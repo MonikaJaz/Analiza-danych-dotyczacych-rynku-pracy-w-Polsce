@@ -1,3 +1,5 @@
+"""Zakładka Statystyki – tabela statystyk opisowych dla wybranych wskaźników i miar."""
+
 import threading
 import tkinter as tk
 from tkinter import messagebox, ttk

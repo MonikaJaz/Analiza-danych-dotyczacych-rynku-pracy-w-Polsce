@@ -1,3 +1,5 @@
+"""Kolory i stałe współdzielone przez wszystkie moduły aplikacji."""
+
 from pathlib import Path
 
 KOLORY = {
